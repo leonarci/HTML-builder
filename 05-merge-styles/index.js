@@ -19,7 +19,9 @@ async function bundleStyles(dir) {
         if (err) throw err;
         styles.push(data);
         if (styles.length === files.length) {
-          styles.forEach(style => writeStyles.write(style));
+          while(styles.length) {
+            writeStyles.write(styles.shift() + '\n');
+          }
         }  
       });
     }
@@ -27,4 +29,8 @@ async function bundleStyles(dir) {
   );
 }
 
-bundleStyles(srcDir);
+try {
+  bundleStyles(srcDir);
+} catch (error) {
+  console.log(error.message);
+}
