@@ -6,15 +6,19 @@ const stylesPath = path.join(__dirname, '/styles');
 const assets = path.join(__dirname, '/assets');
 const assetsCopied = path.join(__dirname, '/project-dist', '/assets');
 
-(function createProjectDist(dir) {
-  const projectDist = path.join(dir, '/project-dist');
-  fs.mkdir(projectDist, { recursive: true }, (err) => {
-    if(err) throw err;
-    createIndexHtml();
-    bundleStyles(stylesPath);
-    copyDir(assets, assetsCopied);
-  });
-})(__dirname);
+try {
+  (function createProjectDist(dir) {
+    const projectDist = path.join(dir, '/project-dist');
+    fs.mkdir(projectDist, { recursive: true }, (err) => {
+      if(err) throw err;
+      createIndexHtml();
+      bundleStyles(stylesPath);
+      copyDir(assets, assetsCopied);
+    });
+  })(__dirname);
+} catch (error) {
+  console.error(error);
+}
 
 async function createIndexHtml() {
   createComponentsObj('/components', result => parseTemplate(result));
@@ -74,7 +78,9 @@ async function bundleStyles(dir) {
         if (err) throw err;
         styles.push(data);
         if (styles.length === files.length) {
-          styles.forEach(style => writeStyles.write(style));
+          while(styles.length) {
+            writeStyles.write(styles.pop() + '\n');
+          }
         }  
       });
     }
